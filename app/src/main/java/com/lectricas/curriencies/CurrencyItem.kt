@@ -7,7 +7,7 @@ data class CurrencyItem(
     val firstItem: Boolean = false
 ) {
     companion object {
-        fun newMultiplied(item: CurrencyItem, amount: Int): CurrencyItem {
+        fun newMultiplied(item: CurrencyItem, amount: Double): CurrencyItem {
             return CurrencyItem(
                 item.id,
                 item.multiplier,

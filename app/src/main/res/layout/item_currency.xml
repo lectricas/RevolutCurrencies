@@ -16,7 +16,9 @@
     <EditText
         android:id="@+id/currencyText"
         android:layout_width="match_parent"
-        android:inputType="number"
+        android:inputType="numberDecimal"
+        android:clickable="false"
+        android:longClickable="false"
         android:layout_height="wrap_content" />
 
 </LinearLayout>
