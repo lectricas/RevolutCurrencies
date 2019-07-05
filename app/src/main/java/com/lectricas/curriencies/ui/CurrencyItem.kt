@@ -1,9 +1,9 @@
-package com.lectricas.curriencies
+package com.lectricas.curriencies.ui
 
 data class CurrencyItem(
-    val id: Int,
-    val multiplier: Int,
-    val amount: String,
+    val id: String,
+    val multiplier: Double,
+    val amount: String = "",
     val firstItem: Boolean = false
 ) {
     companion object {
