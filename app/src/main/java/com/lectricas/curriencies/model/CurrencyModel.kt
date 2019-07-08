@@ -8,11 +8,10 @@ import io.reactivex.schedulers.Schedulers
 class CurrencyModel(
     private val api: CurrencyApi
 ) {
-
     fun getRates(pair: Pair<List<CurrencyItem>, Int>?, number: Int): Single<Pair<List<CurrencyItem>, Int>> {
         var mutable = pair?.first?.toMutableList() ?: mutableListOf()
         val firstItem = if (pair == null) {
-            CurrencyItem("EUR", 1.0, firstItem = true)
+            CurrencyItem("EUR", 1.0, 1.0, true)
         } else {
             val first = mutable.removeAt(number)
             CurrencyItem(first.id, 1.0, first.amount, firstItem = true)

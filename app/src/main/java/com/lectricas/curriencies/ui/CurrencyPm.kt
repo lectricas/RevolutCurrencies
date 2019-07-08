@@ -19,7 +19,6 @@ class CurrencyPm(
 
     override fun onCreate() {
         super.onCreate()
-
         pickCurrencyAction.observable
             .flatMapSingle {
                 currencyModel.getRates(currenciesState.valueOrNull, it)
@@ -37,7 +36,6 @@ class CurrencyPm(
             .untilDestroy()
 
         Observable.interval(1 , SECONDS)
-            .take(1)
             .flatMapSingle {
                 currencyModel.getRates(currenciesState.valueOrNull, 0)
                     .subscribeOn(AndroidSchedulers.mainThread())
