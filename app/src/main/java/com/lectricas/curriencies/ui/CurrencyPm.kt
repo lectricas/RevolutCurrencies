@@ -1,54 +1,49 @@
 package com.lectricas.curriencies.ui
 
 import com.lectricas.curriencies.model.CurrencyModel
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import me.dmdev.rxpm.PresentationModel
+import timber.log.Timber
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.util.concurrent.TimeUnit.SECONDS
 
 class CurrencyPm(
     private val currencyModel: CurrencyModel
 ) : PresentationModel() {
 
-    val moveToFirstAction = Action<Int>()
+    val currenciesState = State<Pair<List<CurrencyItem>, Int>>()
+    val pickCurrencyAction = Action<Int>()
     val textChangedAction = Action<String>()
-    val currenciesState = State<Pair<Boolean, List<CurrencyItem>>>(Pair(true, makeList()))
 
     override fun onCreate() {
         super.onCreate()
 
-        currencyModel.getRates()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
-            .untilDestroy()
-
-        moveToFirstAction.observable
-            .map {
-                val newItems = currenciesState.value.second.toMutableList()
-                val item = newItems.removeAt(it)
-                newItems.add(0, CurrencyItem.newFirst(item))
-                newItems[1] = CurrencyItem.newUsual(newItems[1])
-                return@map newItems
+        pickCurrencyAction.observable
+            .flatMapSingle {
+                currencyModel.getRates(currenciesState.valueOrNull, it)
+                    .subscribeOn(AndroidSchedulers.mainThread())
             }
-            .map { Pair(true, it) }
             .subscribe(currenciesState.consumer)
             .untilDestroy()
 
         textChangedAction.observable
             .map { validateNumbers(it) }
-            .map { amount ->
-                currenciesState.value.second
-                    .map { CurrencyItem.newMultiplied(it, amount) }
+            .map { amountNow ->
+                currencyModel.convert(currenciesState.value.first, amountNow)
             }
-            .map { Pair(false, it) }
             .subscribe(currenciesState.consumer)
             .untilDestroy()
-    }
 
-    private fun makeList(): MutableList<CurrencyItem> {
-        val list = mutableListOf(CurrencyItem("0", 1.0, "", true))
-        list.addAll((1..50).map { CurrencyItem(it.toString(), it.toDouble(), "") })
-        return list
+        Observable.interval(1 , SECONDS)
+            .take(1)
+            .flatMapSingle {
+                currencyModel.getRates(currenciesState.valueOrNull, 0)
+                    .subscribeOn(AndroidSchedulers.mainThread())
+            }
+            .subscribe(currenciesState.consumer)
+            .untilDestroy()
     }
 
     private fun validateNumbers(s: String): Double {

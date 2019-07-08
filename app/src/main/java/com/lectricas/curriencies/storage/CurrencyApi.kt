@@ -1,10 +1,11 @@
 package com.lectricas.curriencies.storage
 
-import com.lectricas.curriencies.storage.CurrencyResponse
 import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface CurrencyApi {
-    @GET("/latest?base=EUR")
-    fun getRates(): Single<CurrencyResponse>
+    @GET("/latest")
+    fun getRates(@Query("base") base: String): Single<CurrencyResponse>
 }
