@@ -1,4 +1,5 @@
-Task:
+#Task:
+
 The app must download and update rates every 1 second using API
 https://revolut.duckdns.org/latest?base=EUR
 
@@ -11,15 +12,19 @@ Use any libraries and languages(java/kotlin) you want. Please, note that the sol
 
 Video demo: https://youtu.be/omcS-6LeKoo 
 
-Solution:
-Repository contains two branches, master and recycler_view.
-master branch - old solution, impletented on ScrollView by adding views manually.
+#Solution:
+
+Repository contains two branches, master and recycler_view:
+
+**master branch** 
+old solution, impletented on ScrollView by adding views manually.
 This solution was easier to implement, but it may low the performance(not confirmed)
-recycler_view brachn
+
+**recycler_view branch**
 Solution based on recyclerView with diff util. Some code covered with unit tests.
 Solution requires improvements. 
 
-Possible issues:
+#Possible issues:
 Not production ready.
 Keyboard unexpected behaviour. 
 Poor error handling.
