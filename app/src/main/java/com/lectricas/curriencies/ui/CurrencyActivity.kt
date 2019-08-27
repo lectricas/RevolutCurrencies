@@ -31,12 +31,13 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
+import androidx.recyclerview.widget.SimpleItemAnimator
 
 class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
 
     private val currencyAdapter = CurrencyAdapter {
         presentationModel.textChangedAction.consumer.accept(it)
-    }
+    }.apply { setHasStableIds(true) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,12 +47,15 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
             layoutManager = LinearLayoutManager(this@CurrencyActivity)
             addOnItemTouchListener(RecyclerViewTouchListener(this@CurrencyActivity))
             addOnScrollListener(ScrollListener())
+
+            (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         }
     }
 
     override fun onBindPresentationModel(pm: CurrencyPm) {
         pm.currenciesState.bindTo {
             currencyAdapter.updateItems(it)
+            Timber.d("Bind ${it.size}")
         }
     }
 
@@ -91,7 +95,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
         override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
     }
 
-    inner class ScrollListener: RecyclerView.OnScrollListener() {
+    inner class ScrollListener : RecyclerView.OnScrollListener() {
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             if (newState == SCROLL_STATE_SETTLING) {
                 val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager

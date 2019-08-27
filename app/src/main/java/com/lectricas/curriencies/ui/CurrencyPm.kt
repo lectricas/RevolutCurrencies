@@ -40,6 +40,7 @@ class CurrencyPm(
             .untilDestroy()
 
         Observable.interval(1, SECONDS)
+            .take(1)
             .flatMapSingle {
                 currencyModel.getRates(0, currenciesState.value)
                     .subscribeOn(Schedulers.io())

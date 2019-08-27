@@ -13,19 +13,19 @@ class CurrencyModel(
 ) {
     fun getRates(number: Int, items: List<CurrencyItem>): Single<List<CurrencyItem>> {
         if (items.isEmpty()) {
-            return api.getRates("EUR")
+            return dummyApi.getRates("1")
                 .map { response ->
                     return@map response.rates.map { CurrencyItem(it.key, it.value) }
                 }
                 .map {
-                    val result = mutableListOf(CurrencyItem("EUR", firstItem = true))
+                    val result = mutableListOf(CurrencyItem("1", firstItem = true))
                     result.addAll(it)
                     return@map result
                 }
         } else {
             val prepared = items.toMutableList()
             val base = prepared.removeAt(number)
-            return api.getRates(base.id)
+            return dummyApi.getRates(base.id)
                 .map { response ->
                     val rates = response.rates
                     return@map prepared.map {

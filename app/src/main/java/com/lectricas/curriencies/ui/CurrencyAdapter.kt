@@ -35,7 +35,12 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
         fun bind(currencyItem: CurrencyItem) {
             itemView.currencyText.addTextChangedListener(CurrencyTextWatcher(this))
             itemView.currencyId.text = currencyItem.id
-            itemView.currencyText.setText(currencyItem.amount.toString())
+            val amount = if (currencyItem.amount == 0.0) {
+                ""
+            } else {
+                String.format("%.2f", currencyItem.amount)
+            }
+            itemView.currencyText.setText(amount)
         }
     }
 
@@ -67,7 +72,7 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
 
     inner class CurrencyTextWatcher(private val holder: OtherViewHolder) : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
-            if (holder.adapterPosition == 0) {
+            if (holder.adapterPosition == 0 && s.toString().isNotEmpty()) {
                 function.invoke(s.toString())
                 Timber.d("Invoke ${s.toString()}")
             }
@@ -77,5 +82,11 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         }
+    }
+
+    override fun getItemId(position: Int): Long {
+        Timber.d("id ${items[position].id} ${items[position].id.hashCode().toLong()}")
+        Timber.d("")
+        return items[position].id.hashCode().toLong()
     }
 }
