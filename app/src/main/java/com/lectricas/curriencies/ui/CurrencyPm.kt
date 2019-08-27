@@ -36,6 +36,7 @@ class CurrencyPm(
             .untilDestroy()
 
         Observable.interval(1 , SECONDS)
+            .take(1)
             .flatMapSingle {
                 currencyModel.getRates(currenciesState.valueOrNull, 0)
                     .subscribeOn(AndroidSchedulers.mainThread())
