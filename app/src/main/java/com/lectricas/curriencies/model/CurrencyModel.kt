@@ -1,65 +1,68 @@
 package com.lectricas.curriencies.model
 
 import com.lectricas.curriencies.storage.CurrencyApi
+import com.lectricas.curriencies.storage.DummyApi
 import com.lectricas.curriencies.ui.CurrencyItem
 import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 class CurrencyModel(
-    private val api: CurrencyApi
+    private val api: CurrencyApi,
+    private val dummyApi: DummyApi
 ) {
-    fun getRates(pair: Pair<List<CurrencyItem>, Int>?, number: Int): Single<Pair<List<CurrencyItem>, Int>> {
-        var mutable = pair?.first?.toMutableList() ?: mutableListOf()
-        val firstItem = if (pair == null) {
-            CurrencyItem("EUR", 1.0, 1.0, true)
-        } else {
-            val first = mutable.removeAt(number)
-            CurrencyItem(first.id, 1.0, first.amount, firstItem = true)
-        }
-
-        return api.getRates(firstItem.id)
-            .map { response ->
-                val elements = response.rates
-                if (mutable.isEmpty()) {
-                    mutable.addAll(elements.toList().map {
-                        CurrencyItem(
-                            it.first,
-                            it.second,
-                            getAmount(firstItem.amount, it.second)
-                        )
-                    })
-                } else {
-                    mutable = mutable.map { item ->
-                        val multiplier = elements[item.id] ?: error("Seems like data is corrupted ")
-                        CurrencyItem(
-                            item.id,
-                            multiplier,
-                            getAmount(firstItem.amount, multiplier)
-                        )
-                    }.toMutableList()
+    fun getRates(number: Int, items: List<CurrencyItem>): Single<List<CurrencyItem>> {
+        if (items.isEmpty()) {
+            return dummyApi.getRates("1")
+                .map { response ->
+                    return@map response.rates.map { CurrencyItem(it.key, it.value) }
                 }
-                mutable.add(0, firstItem)
-                return@map mutable.toList()
-            }
-            .map { Pair(it, number) }
-            .subscribeOn(Schedulers.io())
+                .map {
+                    val result = mutableListOf(CurrencyItem("1", firstItem = true))
+                    result.addAll(it)
+                    return@map result
+                }
+        } else {
+            val prepared = items.toMutableList()
+            val base = prepared.removeAt(number)
+            return dummyApi.getRates(base.id)
+                .map { response ->
+                    val rates = response.rates
+                    return@map prepared.map {
+                        CurrencyItem(it.id, rates.getValue(it.id))
+                    }
+                }
+                .map {
+                    val result = mutableListOf(CurrencyItem(base.id, base.multiplier, firstItem = true))
+                    result.addAll(it)
+                    return@map result
+                }
+        }
     }
 
-    private fun getAmount(amountNow: Double, multiplier: Double): Double {
+    private fun calculateAmount(amountNow: Double, multiplier: Double): Double {
         return amountNow * multiplier
     }
 
-    fun convert(second: List<CurrencyItem>, amountNow: Double): Pair<List<CurrencyItem>, Int> {
-        return Pair(
-            second.map { item ->
-                CurrencyItem(
-                    item.id,
-                    item.multiplier,
-                    getAmount(amountNow, item.multiplier),
-                    item.firstItem
-                )
-            },
-            0
-        )
+    fun convert(second: List<CurrencyItem>, amountNow: Double): List<CurrencyItem> {
+        return second.map { item ->
+            CurrencyItem(
+                item.id,
+                item.multiplier,
+                calculateAmount(amountNow, item.multiplier),
+                item.firstItem
+            )
+        }
+    }
+
+    fun validateNumbers(s: String): Double {
+        if (s.isBlank()) {
+            return 0.0
+        }
+        val formatter = DecimalFormat()
+        val symbol = DecimalFormatSymbols()
+        symbol.decimalSeparator = '.'
+        formatter.decimalFormatSymbols = symbol
+        return formatter.parse(s.replace(",", ".")).toDouble()
     }
 }
