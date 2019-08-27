@@ -1,12 +1,10 @@
 package com.lectricas.curriencies.ui
 
-import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.lectricas.curriencies.R
@@ -15,8 +13,6 @@ import kotlinx.android.synthetic.main.item_currency.view.currencyText
 import timber.log.Timber
 
 class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-//    private val textWatcher = CurrencyTextWatcher()
 
     private val items = mutableListOf<CurrencyItem>()
 
@@ -36,8 +32,8 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
 
     inner class OtherViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-
         fun bind(currencyItem: CurrencyItem) {
+            itemView.currencyText.addTextChangedListener(CurrencyTextWatcher(this))
             itemView.currencyId.text = currencyItem.id
             itemView.currencyText.setText(currencyItem.amount.toString())
         }
@@ -62,7 +58,24 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
         override fun getNewListSize() = new.size
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            if (old[oldItemPosition].firstItem && new[newItemPosition].firstItem) {
+                return true
+            } else
             return old[oldItemPosition].amount == new[newItemPosition].amount
+        }
+    }
+
+    inner class CurrencyTextWatcher(private val holder: OtherViewHolder) : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {
+            if (holder.adapterPosition == 0) {
+                function.invoke(s.toString())
+                Timber.d("Invoke ${s.toString()}")
+            }
+        }
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
         }
     }
 }

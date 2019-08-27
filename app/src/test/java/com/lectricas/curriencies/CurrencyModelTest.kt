@@ -65,7 +65,7 @@ class CurrencyModelTest {
             CurrencyItem(it.id, it.multiplier)
         }.toMutableList()
         val toInsert = expectedObjects.removeAt(picked)
-        expectedObjects.add(0, CurrencyItem(toInsert.id, toInsert.multiplier, firstItem = true))
+        expectedObjects.add(0, CurrencyItem(toInsert.id, 1.0, firstItem = true))
 
         testObserver1
             .assertNoErrors()
@@ -124,6 +124,5 @@ class CurrencyModelTest {
         assertEquals(currencyModel.convert(Objects.currencyItems, 0.1), newItems(0.1))
         assertEquals(currencyModel.convert(Objects.currencyItems, 5.2), newItems(5.2))
         assertEquals(currencyModel.convert(Objects.currencyItems, 12523.3324), newItems(12523.3324))
-
     }
 }

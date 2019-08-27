@@ -34,8 +34,6 @@ import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
 
 class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
 
-    private val textWatcher = CurrencyTextWatcher()
-
     private val currencyAdapter = CurrencyAdapter {
         presentationModel.textChangedAction.consumer.accept(it)
     }
@@ -47,25 +45,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
             adapter = currencyAdapter
             layoutManager = LinearLayoutManager(this@CurrencyActivity)
             addOnItemTouchListener(RecyclerViewTouchListener(this@CurrencyActivity))
-            addOnScrollListener(object: OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    Timber.d("onScrolled")
-                }
-
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    Timber.d("state $newState")
-                    if (newState ==  SCROLL_STATE_SETTLING) {
-                        val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                        var view = currentFocus
-                        if (view == null) {
-                            view = View(this@CurrencyActivity)
-                        }
-                        imm.hideSoftInputFromWindow(view.windowToken, 0)
-                    }
-                }
-            })
+            addOnScrollListener(ScrollListener())
         }
     }
 
@@ -95,14 +75,12 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
                 (clicked as? LinearLayout)?.let {
                     val position = rv.getChildAdapterPosition(it)
                     presentationModel.pickCurrencyAction.consumer.accept(position)
-                    val editText = it.getChildAt(1)as EditText
+                    val editText = it.getChildAt(1) as EditText
                     (editText).post {
                         editText.requestFocusFromTouch()
                         editText.setSelection(editText.length())
-                        editText.addTextChangedListener(textWatcher)
                         val lManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         lManager.showSoftInput(editText, 0)
-                        ((rv.getChildAt(1) as LinearLayout).getChildAt(1) as EditText).removeTextChangedListener(textWatcher)
                     }
                     return true
                 }
@@ -113,15 +91,12 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
         override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
     }
 
-    inner class CurrencyTextWatcher : TextWatcher {
-        override fun afterTextChanged(s: Editable?) {
-            Timber.d("textChanges $s")
-            presentationModel.textChangedAction.consumer.accept(s.toString())
-        }
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    inner class ScrollListener: RecyclerView.OnScrollListener() {
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            if (newState == SCROLL_STATE_SETTLING) {
+                val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(View(this@CurrencyActivity).windowToken, 0)
+            }
         }
     }
 }
