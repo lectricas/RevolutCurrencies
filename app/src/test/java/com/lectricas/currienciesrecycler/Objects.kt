@@ -1,7 +1,7 @@
-package com.lectricas.curriencies
+package com.lectricas.currienciesrecycler
 
-import com.lectricas.curriencies.storage.CurrencyResponse
-import com.lectricas.curriencies.ui.CurrencyItem
+import com.lectricas.currienciesrecycler.storage.CurrencyResponse
+import com.lectricas.currienciesrecycler.ui.CurrencyItem
 
 class Objects {
     companion object {

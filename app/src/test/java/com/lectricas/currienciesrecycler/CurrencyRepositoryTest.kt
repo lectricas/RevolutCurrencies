@@ -1,7 +1,7 @@
-package com.lectricas.curriencies
+package com.lectricas.currienciesrecycler
 
 import com.google.gson.GsonBuilder
-import com.lectricas.curriencies.storage.CurrencyApi
+import com.lectricas.currienciesrecycler.storage.CurrencyApi
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.apache.commons.io.IOUtils

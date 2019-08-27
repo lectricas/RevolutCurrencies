@@ -1,4 +1,4 @@
-package com.lectricas.curriencies.ui
+package com.lectricas.currienciesrecycler.ui
 
 data class CurrencyItem(
     val id: String,

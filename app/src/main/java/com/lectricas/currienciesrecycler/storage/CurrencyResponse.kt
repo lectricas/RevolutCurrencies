@@ -1,4 +1,4 @@
-package com.lectricas.curriencies.storage
+package com.lectricas.currienciesrecycler.storage
 
 data class CurrencyResponse(
     val base: String,

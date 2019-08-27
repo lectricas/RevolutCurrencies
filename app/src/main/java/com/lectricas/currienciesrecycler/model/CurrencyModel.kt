@@ -1,8 +1,8 @@
-package com.lectricas.curriencies.model
+package com.lectricas.currienciesrecycler.model
 
-import com.lectricas.curriencies.storage.CurrencyApi
-import com.lectricas.curriencies.storage.DummyApi
-import com.lectricas.curriencies.ui.CurrencyItem
+import com.lectricas.currienciesrecycler.storage.CurrencyApi
+import com.lectricas.currienciesrecycler.storage.DummyApi
+import com.lectricas.currienciesrecycler.ui.CurrencyItem
 import io.reactivex.Single
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols

@@ -1,8 +1,7 @@
-package com.lectricas.curriencies.ui
+package com.lectricas.currienciesrecycler.ui
 
-import com.lectricas.curriencies.model.CurrencyModel
+import com.lectricas.currienciesrecycler.model.CurrencyModel
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import me.dmdev.rxpm.PresentationModel

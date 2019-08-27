@@ -1,4 +1,4 @@
-package com.lectricas.curriencies.ui
+package com.lectricas.currienciesrecycler.ui
 
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.lectricas.curriencies.R
+import com.lectricas.currienciesrecycler.R
 import kotlinx.android.synthetic.main.item_currency.view.currencyId
 import kotlinx.android.synthetic.main.item_currency.view.currencyText
 import timber.log.Timber

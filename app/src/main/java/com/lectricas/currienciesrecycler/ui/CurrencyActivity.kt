@@ -1,35 +1,24 @@
-package com.lectricas.curriencies.ui
+package com.lectricas.currienciesrecycler.ui
 
 import android.content.Context
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.annotation.Nullable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import com.lectricas.curriencies.App
-import com.lectricas.curriencies.R
-import com.lectricas.curriencies.model.CurrencyModel
-import com.lectricas.curriencies.storage.DummyApi
+import com.lectricas.currienciesrecycler.App
+import com.lectricas.currienciesrecycler.R
+import com.lectricas.currienciesrecycler.model.CurrencyModel
+import com.lectricas.currienciesrecycler.storage.DummyApi
 import kotlinx.android.synthetic.main.activity_currency.containerView
 import me.dmdev.rxpm.base.PmSupportActivity
 import timber.log.Timber
 import android.app.Activity
-import android.text.Editable
-import android.text.TextWatcher
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.view.get
-import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
 import androidx.recyclerview.widget.SimpleItemAnimator
 
@@ -47,7 +36,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
             layoutManager = LinearLayoutManager(this@CurrencyActivity)
             addOnItemTouchListener(RecyclerViewTouchListener(this@CurrencyActivity))
             addOnScrollListener(ScrollListener())
-
+            setHasFixedSize(true)
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         }
     }

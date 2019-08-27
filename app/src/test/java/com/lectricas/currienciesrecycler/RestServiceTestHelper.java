@@ -1,4 +1,4 @@
-package com.lectricas.curriencies;
+package com.lectricas.currienciesrecycler;
 
 import android.content.Context;
 import java.io.BufferedReader;

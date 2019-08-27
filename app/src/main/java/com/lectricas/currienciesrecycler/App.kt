@@ -1,9 +1,8 @@
-package com.lectricas.curriencies
+package com.lectricas.currienciesrecycler
 
 import android.app.Application
-import android.content.Context
 import com.google.gson.GsonBuilder
-import com.lectricas.curriencies.storage.CurrencyApi
+import com.lectricas.currienciesrecycler.storage.CurrencyApi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory

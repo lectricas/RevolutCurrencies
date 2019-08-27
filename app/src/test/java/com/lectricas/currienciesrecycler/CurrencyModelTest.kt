@@ -1,13 +1,13 @@
-package com.lectricas.curriencies
+package com.lectricas.currienciesrecycler
 
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
-import com.lectricas.curriencies.model.CurrencyModel
-import com.lectricas.curriencies.storage.CurrencyApi
-import com.lectricas.curriencies.storage.CurrencyResponse
-import com.lectricas.curriencies.storage.DummyApi
-import com.lectricas.curriencies.ui.CurrencyAdapter.CurrenciesDiffUtil
-import com.lectricas.curriencies.ui.CurrencyItem
+import com.lectricas.currienciesrecycler.model.CurrencyModel
+import com.lectricas.currienciesrecycler.storage.CurrencyApi
+import com.lectricas.currienciesrecycler.storage.CurrencyResponse
+import com.lectricas.currienciesrecycler.storage.DummyApi
+import com.lectricas.currienciesrecycler.ui.CurrencyAdapter.CurrenciesDiffUtil
+import com.lectricas.currienciesrecycler.ui.CurrencyItem
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.schedulers.Schedulers
