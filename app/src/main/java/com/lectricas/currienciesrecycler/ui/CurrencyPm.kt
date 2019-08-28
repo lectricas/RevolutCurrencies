@@ -19,8 +19,8 @@ class CurrencyPm(
         super.onCreate()
         pickCurrencyAction.observable
             .flatMapSingle {
-                currencyModel.getRates(it, currenciesState.value)
-                    .subscribeOn(Schedulers.io())
+                currencyModel.getRatesForPicked(it, currenciesState.value)
+                    .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
             }
             .doOnError {
@@ -41,7 +41,7 @@ class CurrencyPm(
         Observable.interval(1, SECONDS)
             .take(1)
             .flatMapSingle {
-                currencyModel.getRates(0, currenciesState.value)
+                currencyModel.loadRates()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
             }

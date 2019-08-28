@@ -35,7 +35,6 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
             adapter = currencyAdapter
             layoutManager = LinearLayoutManager(this@CurrencyActivity)
             addOnItemTouchListener(RecyclerViewTouchListener(this@CurrencyActivity))
-            addOnScrollListener(ScrollListener())
             setHasFixedSize(true)
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         }
