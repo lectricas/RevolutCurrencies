@@ -21,6 +21,7 @@
         android:id="@+id/currencyText"
         android:layout_width="match_parent"
         android:maxLength="10"
+        android:text="pRIVETSONYA"
         android:gravity="end"
         android:inputType="numberDecimal"
         android:layout_height="wrap_content" />
