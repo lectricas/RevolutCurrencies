@@ -19,7 +19,7 @@ class CurrencyPm(
         super.onCreate()
         pickCurrencyAction.observable
             .flatMapSingle {
-                currencyModel.getRatesForPicked(it, currenciesState.value)
+                currencyModel.getRates(it, currenciesState.value)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
             }

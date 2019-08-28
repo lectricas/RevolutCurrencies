@@ -60,16 +60,12 @@ class CurrencyModel(
             }
     }
 
-    private fun calculateAmount(amountNow: Double, multiplier: Double): Double {
-        return amountNow * multiplier
-    }
-
-    fun convert(second: List<CurrencyItem>, amountNow: Double): List<CurrencyItem> {
-        return second.map { item ->
+    fun convert(items: List<CurrencyItem>, amountNow: Double): List<CurrencyItem> {
+        return items.map { item ->
             CurrencyItem(
                 item.id,
                 item.multiplier,
-                calculateAmount(amountNow, item.multiplier),
+                item.multiplier * amountNow,
                 item.firstItem
             )
         }
@@ -86,7 +82,7 @@ class CurrencyModel(
         return formatter.parse(s.replace(",", ".")).toDouble()
     }
 
-    fun getRatesForPicked(number: Int, items: List<CurrencyItem>): Single<List<CurrencyItem>> {
+    fun getRates(number: Int, items: List<CurrencyItem>): Single<List<CurrencyItem>> {
         val listToModify = items.toMutableList()
         val base = listToModify.removeAt(number)
         val new = listToModify.map {
