@@ -5,24 +5,13 @@ https://revolut.duckdns.org/latest?base=EUR
 
 List all currencies you get from the endpoint (one per row). Each row has an input where you
 can enter any amount of money. When you tap on currency row it should slide to top and its
-input becomes first responder. When you’re changing the amount the app must simultaneously
+input becomes first responder. When youâ€™re changing the amount the app must simultaneously
 update the corresponding value for other currencies.
 
 Use any libraries and languages(java/kotlin) you want. Please, note that the solution should be production ready.
 
 Video demo: https://youtu.be/omcS-6LeKoo 
 
-### Solution:
-
-Repository contains two branches, master and recycler_view:
-
-**master branch** 
-old solution, impletented on ScrollView by adding views manually.
-This solution was easier to implement, but it may low the performance(not confirmed)
-
-**recycler_view branch**
-Solution based on recyclerView with diff util. Some code covered with unit tests.
-Solution requires improvements. 
 
 ### Possible issues:
 1.  Not production ready.
@@ -30,4 +19,3 @@ Solution requires improvements.
 3.  Poor error handling.
 4.  Unable to change the base currency when internet connection is lost.
 5.  Most of the problems comes from poor understanding of Android UI thread execution order/understanding of how recyclerView works.
-
