@@ -19,7 +19,7 @@ class CurrencyPm(
         super.onCreate()
         pickCurrencyAction.observable
             .flatMapSingle {
-                currencyModel.getRatesForPicked(it, currenciesState.value)
+                currencyModel.getRates(it, currenciesState.value)
                     .subscribeOn(Schedulers.computation())
                     .observeOn(AndroidSchedulers.mainThread())
             }
@@ -33,15 +33,14 @@ class CurrencyPm(
         textChangedAction.observable
             .map { currencyModel.validateNumbers(it) }
             .map { amountNow ->
-                currencyModel.convert(currenciesState.value, amountNow)
+                currencyModel.convertAmount(currenciesState.value, amountNow)
             }
             .subscribe(currenciesState.consumer)
             .untilDestroy()
 
         Observable.interval(1, SECONDS)
-            .take(1)
             .flatMapSingle {
-                currencyModel.loadRates()
+                currencyModel.loadRates(currenciesState.value)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
             }

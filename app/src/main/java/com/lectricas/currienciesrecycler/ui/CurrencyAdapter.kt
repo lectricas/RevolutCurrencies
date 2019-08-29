@@ -72,7 +72,7 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
 
     inner class CurrencyTextWatcher(private val holder: OtherViewHolder) : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
-            if (holder.adapterPosition == 0 && s.toString().isNotEmpty()) {
+            if (holder.adapterPosition == 0) {
                 function.invoke(s.toString())
                 Timber.d("Invoke ${s.toString()}")
             }
@@ -85,8 +85,6 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
     }
 
     override fun getItemId(position: Int): Long {
-        Timber.d("id ${items[position].id} ${items[position].id.hashCode().toLong()}")
-        Timber.d("")
         return items[position].id.hashCode().toLong()
     }
 }
