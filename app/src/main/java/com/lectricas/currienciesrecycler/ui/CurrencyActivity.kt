@@ -11,16 +11,13 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.lectricas.currienciesrecycler.App
 import com.lectricas.currienciesrecycler.R
 import com.lectricas.currienciesrecycler.model.CurrencyModel
 import com.lectricas.currienciesrecycler.storage.DummyApi
-import kotlinx.android.synthetic.main.activity_currency.containerView
+import kotlinx.android.synthetic.main.activity_currency.currenciesRecycler
 import me.dmdev.rxpm.base.PmSupportActivity
-import timber.log.Timber
-import android.app.Activity
-import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING
-import androidx.recyclerview.widget.SimpleItemAnimator
 
 class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
 
@@ -31,7 +28,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_currency)
-        with(containerView) {
+        with(currenciesRecycler) {
             adapter = currencyAdapter
             layoutManager = LinearLayoutManager(this@CurrencyActivity)
             addOnItemTouchListener(RecyclerViewTouchListener(this@CurrencyActivity))
@@ -43,7 +40,6 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
     override fun onBindPresentationModel(pm: CurrencyPm) {
         pm.currenciesState.bindTo {
             currencyAdapter.updateItems(it)
-            Timber.d("Bind ${it.size}")
         }
     }
 
@@ -83,12 +79,12 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
         override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
     }
 
-    inner class ScrollListener : RecyclerView.OnScrollListener() {
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            if (newState == SCROLL_STATE_SETTLING) {
-                val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(View(this@CurrencyActivity).windowToken, 0)
-            }
-        }
-    }
+//    inner class ScrollListener : RecyclerView.OnScrollListener() {
+//        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//            if (newState == SCROLL_STATE_SETTLING) {
+//                val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+//                imm.hideSoftInputFromWindow(View(this@CurrencyActivity).windowToken, 0)
+//            }
+//        }
+//    }
 }

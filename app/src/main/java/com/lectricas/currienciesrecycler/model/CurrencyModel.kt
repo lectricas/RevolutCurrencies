@@ -15,43 +15,20 @@ class CurrencyModel(
     companion object {
         const val DEFAULT_BASE = "EUR"
     }
-//    fun getRates(number: Int, items: List<CurrencyItem>): Single<List<CurrencyItem>> {
-//        if (items.isEmpty()) {
-//            return dummyApi.getRates()
-//                .map { response ->
-//                    return@map response.rates.map { CurrencyItem(it.key, it.value) }
-//                }
-//                .map {
-//                    val result = mutableListOf(CurrencyItem("EUR", firstItem = true))
-//                    result.addAll(it)
-//                    return@map result
-//                }
-//        } else {
-//            val prepared = items.toMutableList()
-//            val base = prepared.removeAt(number)
-//            return dummyApi.getRates()
-//                .map { response ->
-//                    val rates = response.rates
-//                    return@map prepared.map {
-//                        CurrencyItem(
-//                            it.id,
-//                            rates.getValue(it.id),
-//                            calculateAmount(base.amount, rates.getValue(it.id))
-//                        )
-//                    }
-//                }
-//                .map {
-//                    val result = mutableListOf(CurrencyItem(base.id, amount = base.amount, firstItem = true))
-//                    result.addAll(it)
-//                    return@map result
-//                }
-//        }
-//    }
 
-    fun loadRates(): Single<List<CurrencyItem>> {
+    fun loadRates(items: List<CurrencyItem>): Single<List<CurrencyItem>> {
         return dummyApi.getRates()
             .map { response ->
-                return@map response.rates.map { CurrencyItem(it.key, it.value) }
+                if (items.isEmpty()) {
+                    return@map response.rates.map { CurrencyItem(it.key, it.value) }
+                } else {
+                    items.map {
+                        val rate = response.rates.getValue(it.id)
+                        CurrencyItem(it.id, rate, items.first().amount * rate)
+
+                    }
+                }
+                    return@map response.rates.map { CurrencyItem(it.key, it.value) }
             }
             .map {
                 val result = mutableListOf(CurrencyItem(DEFAULT_BASE, firstItem = true))
@@ -60,12 +37,12 @@ class CurrencyModel(
             }
     }
 
-    fun convert(items: List<CurrencyItem>, amountNow: Double): List<CurrencyItem> {
+    fun convertAmount(items: List<CurrencyItem>, amountNow: Double): List<CurrencyItem> {
         return items.map { item ->
             CurrencyItem(
                 item.id,
-                item.multiplier,
-                item.multiplier * amountNow,
+                item.rate,
+                item.rate * amountNow,
                 item.firstItem
             )
         }
@@ -86,7 +63,7 @@ class CurrencyModel(
         val listToModify = items.toMutableList()
         val base = listToModify.removeAt(number)
         val new = listToModify.map {
-            val newMultiplier = it.multiplier / base.multiplier
+            val newMultiplier = it.rate / base.rate
             CurrencyItem(it.id, newMultiplier, newMultiplier * base.amount)
         }.toMutableList()
         new.add(0, CurrencyItem(base.id, amount = base.amount, firstItem = true))

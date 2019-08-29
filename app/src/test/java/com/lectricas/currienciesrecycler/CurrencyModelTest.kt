@@ -32,7 +32,6 @@ class CurrencyModelTest {
         assertEquals(currencyModel.validateNumbers("0.1"), 0.1)
         assertEquals(currencyModel.validateNumbers("5"), 5.0)
         assertEquals(currencyModel.validateNumbers("5.5"), 5.5)
-
     }
 
     @Test
@@ -45,7 +44,23 @@ class CurrencyModelTest {
             CurrencyItem("BRL", 4.8101),
             CurrencyItem("CAD", 1.5397)
         )
-        currencyModel.loadRates().test().assertValue(current)
+        currencyModel.loadRates(listOf()).test().assertValue(current)
+
+        val currentNew = listOf(
+            CurrencyItem("EUR", firstItem = true),
+            CurrencyItem("AUD", 1.4226),
+            CurrencyItem("BGN", 1.8633),
+            CurrencyItem("BRL", 4.9101),
+            CurrencyItem("CAD", 1.4397)
+        )
+
+        val EUR_AUD = listOf(
+            CurrencyItem("AUD", 1.0, firstItem = true),
+            CurrencyItem("EUR", 1.0 / 1.4226),
+            CurrencyItem("BGN", 1.9633 / 1.4226),
+            CurrencyItem("BRL", 4.8101 / 1.4226),
+            CurrencyItem("CAD", 1.5397 / 1.4226)
+        )
     }
 
     @Test
@@ -60,32 +75,32 @@ class CurrencyModelTest {
         )
 
         val EUR_CONVERTED = listOf(
-            CurrencyItem("EUR", amount = 250.0 ,firstItem = true),
-            CurrencyItem("AUD", 1.6226,1.6226 * 250),
-            CurrencyItem("BGN", 1.9633,1.9633 * 250),
-            CurrencyItem("BRL", 4.8101,4.8101 * 250),
-            CurrencyItem("CAD", 1.5397,1.5397 * 250)
+            CurrencyItem("EUR", amount = 250.0, firstItem = true),
+            CurrencyItem("AUD", 1.6226, 1.6226 * 250),
+            CurrencyItem("BGN", 1.9633, 1.9633 * 250),
+            CurrencyItem("BRL", 4.8101, 4.8101 * 250),
+            CurrencyItem("CAD", 1.5397, 1.5397 * 250)
         )
 
-        assertEquals(EUR_CONVERTED, currencyModel.convert(EUR, 250.0))
+        assertEquals(EUR_CONVERTED, currencyModel.convertAmount(EUR, 250.0))
 
         val EUR_AUD = listOf(
             CurrencyItem("AUD", 1.0, firstItem = true),
-            CurrencyItem("EUR", 1.0/1.6226),
-            CurrencyItem("BGN", 1.9633/1.6226),
-            CurrencyItem("BRL", 4.8101/1.6226),
-            CurrencyItem("CAD", 1.5397/1.6226)
+            CurrencyItem("EUR", 1.0 / 1.6226),
+            CurrencyItem("BGN", 1.9633 / 1.6226),
+            CurrencyItem("BRL", 4.8101 / 1.6226),
+            CurrencyItem("CAD", 1.5397 / 1.6226)
         )
 
         val EUR_AUD_CONVERTED = listOf(
             CurrencyItem("AUD", 1.0, 250.0, firstItem = true),
-            CurrencyItem("EUR", 1.0/1.6226, 1.0/1.6226 * 250),
-            CurrencyItem("BGN", 1.9633/1.6226, 1.9633/1.6226 * 250),
-            CurrencyItem("BRL", 4.8101/1.6226, 4.8101/1.6226 * 250),
-            CurrencyItem("CAD", 1.5397/1.6226, 1.5397/1.6226 * 250)
+            CurrencyItem("EUR", 1.0 / 1.6226, 1.0 / 1.6226 * 250),
+            CurrencyItem("BGN", 1.9633 / 1.6226, 1.9633 / 1.6226 * 250),
+            CurrencyItem("BRL", 4.8101 / 1.6226, 4.8101 / 1.6226 * 250),
+            CurrencyItem("CAD", 1.5397 / 1.6226, 1.5397 / 1.6226 * 250)
         )
 
-        assertEquals(EUR_AUD_CONVERTED, currencyModel.convert(EUR_AUD, 250.0))
+        assertEquals(EUR_AUD_CONVERTED, currencyModel.convertAmount(EUR_AUD, 250.0))
     }
 
     @Test
@@ -99,17 +114,18 @@ class CurrencyModelTest {
             CurrencyItem("CAD", 1.5397)
         )
 
-        val ONE_EUR = currencyModel.convert(EUR, 1.0)
+        val ONE_EUR = currencyModel.convertAmount(EUR, 1.0)
 
         val EUR_AUD = listOf(
             CurrencyItem("AUD", 1.0, 1.6226, firstItem = true),
-            CurrencyItem("EUR", 1.0/1.6226, (1.0/1.6226) * 1.6226),
-            CurrencyItem("BGN", 1.9633/1.6226, (1.9633/1.6226) * 1.6226),
-            CurrencyItem("BRL", 4.8101/1.6226, (4.8101/1.6226)* 1.6226) ,
-            CurrencyItem("CAD", 1.5397/1.6226, (1.5397/1.6226) * 1.6226)
+            CurrencyItem("EUR", 1.0 / 1.6226, (1.0 / 1.6226) * 1.6226),
+            CurrencyItem("BGN", 1.9633 / 1.6226, (1.9633 / 1.6226) * 1.6226),
+            CurrencyItem("BRL", 4.8101 / 1.6226, (4.8101 / 1.6226) * 1.6226),
+            CurrencyItem("CAD", 1.5397 / 1.6226, (1.5397 / 1.6226) * 1.6226)
         )
-        assertEquals(EUR, currencyModel.getRates(0, EUR))
-        assertEquals(ONE_EUR, currencyModel.getRates(0, ONE_EUR))
-        assertEquals(EUR_AUD, currencyModel.getRates(1, ONE_EUR))
+
+        currencyModel.getRates(0, EUR).test().assertValue(EUR)
+        currencyModel.getRates(0, ONE_EUR).test().assertValue(ONE_EUR)
+        currencyModel.getRates(1, ONE_EUR).test().assertValue(EUR_AUD)
     }
 }
