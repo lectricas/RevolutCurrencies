@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.lectricas.currienciesrecycler.App
 import com.lectricas.currienciesrecycler.R
 import com.lectricas.currienciesrecycler.model.CurrencyModel
-import com.lectricas.currienciesrecycler.storage.DummyApi
 import kotlinx.android.synthetic.main.activity_currency.currenciesRecycler
 import me.dmdev.rxpm.base.PmSupportActivity
 
@@ -33,6 +32,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
             layoutManager = LinearLayoutManager(this@CurrencyActivity)
             addOnItemTouchListener(RecyclerViewTouchListener(this@CurrencyActivity))
             setHasFixedSize(true)
+            addOnScrollListener(ScrollListener())
             (itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         }
     }
@@ -44,7 +44,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
     }
 
     override fun providePresentationModel(): CurrencyPm {
-        return CurrencyPm(CurrencyModel((applicationContext as App).serverApi, DummyApi()))
+        return CurrencyPm(CurrencyModel((applicationContext as App).serverApi))
     }
 
     inner class RecyclerViewTouchListener(context: Context) : RecyclerView.OnItemTouchListener {
@@ -79,12 +79,19 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
         override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
     }
 
-//    inner class ScrollListener : RecyclerView.OnScrollListener() {
-//        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//            if (newState == SCROLL_STATE_SETTLING) {
-//                val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-//                imm.hideSoftInputFromWindow(View(this@CurrencyActivity).windowToken, 0)
-//            }
-//        }
-//    }
+    inner class ScrollListener : RecyclerView.OnScrollListener() {
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                (recyclerView.getChildAt(0) as? LinearLayout)?.let {
+                    val editText = it.getChildAt(1) as EditText
+                    (editText).post {
+                        editText.clearFocus()
+                        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
+                    }
+                }
+            }
+        }
+    }
 }

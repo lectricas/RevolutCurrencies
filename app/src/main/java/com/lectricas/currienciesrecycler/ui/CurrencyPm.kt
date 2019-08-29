@@ -39,7 +39,6 @@ class CurrencyPm(
             .untilDestroy()
 
         Observable.interval(1, SECONDS)
-            .take(1)
             .flatMapSingle {
                 currencyModel.loadRates(currenciesState.value)
                     .subscribeOn(Schedulers.io())

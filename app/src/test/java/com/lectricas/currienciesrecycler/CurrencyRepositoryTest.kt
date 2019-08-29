@@ -2,6 +2,7 @@ package com.lectricas.currienciesrecycler
 
 import com.google.gson.GsonBuilder
 import com.lectricas.currienciesrecycler.storage.CurrencyApi
+import com.lectricas.currienciesrecycler.storage.CurrencyResponse
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.apache.commons.io.IOUtils
@@ -39,20 +40,33 @@ class CurrencyRepositoryTest() {
     @Throws(Exception::class)
     @Test
     fun test_response_success() {
+
+        val currencyResponse = CurrencyResponse(
+            "EUR",
+            "2018-09-06",
+            mapOf(
+                Pair("AUD", 1.6219),
+                Pair("BGN", 1.9625),
+                Pair("BRL", 4.8082),
+                Pair("CAD", 1.5391),
+                Pair("CHF", 1.1314)
+            )
+        )
+
         val inputStream = this.javaClass.classLoader
             .getResourceAsStream("test_response.json")
 
         val total = IOUtils.toString(inputStream)
 
-        val response = MockResponse()
+        val serverResponse = MockResponse()
             .setResponseCode(200)
             .setBody(total)
 
-        mockServer.enqueue(response)
+        mockServer.enqueue(serverResponse)
 
         val observer = api.getRates("EUR").test()
         observer.assertValueCount(1)
             .assertNoErrors()
-            .assertValue(Objects.response)
+            .assertValue(currencyResponse)
     }
 }

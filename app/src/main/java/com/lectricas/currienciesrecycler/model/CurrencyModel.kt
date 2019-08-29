@@ -1,15 +1,13 @@
 package com.lectricas.currienciesrecycler.model
 
 import com.lectricas.currienciesrecycler.storage.CurrencyApi
-import com.lectricas.currienciesrecycler.storage.DummyApi
 import com.lectricas.currienciesrecycler.ui.CurrencyItem
 import io.reactivex.Single
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 
 class CurrencyModel(
-    private val api: CurrencyApi,
-    private val dummyApi: DummyApi
+    private val api: CurrencyApi
 ) {
 
     companion object {
@@ -17,23 +15,22 @@ class CurrencyModel(
     }
 
     fun loadRates(items: List<CurrencyItem>): Single<List<CurrencyItem>> {
-        return dummyApi.getRates()
+        return api.getRates(DEFAULT_BASE)
             .map { response ->
                 if (items.isEmpty()) {
-                    return@map response.rates.map { CurrencyItem(it.key, it.value) }
+                    val newItems = response.rates.map { CurrencyItem(it.key, it.value) }.toMutableList()
+                    newItems.add(0, CurrencyItem(DEFAULT_BASE, firstItem = true))
+                    return@map newItems
                 } else {
-                    items.map {
-                        val rate = response.rates.getValue(it.id)
-                        CurrencyItem(it.id, rate, items.first().amount * rate)
-
+                    val withBase = response.rates.toMutableMap()
+                    withBase[DEFAULT_BASE] = 1.0
+                    val newBase = withBase.getValue(items.first().id)
+                    val newItems = items.map {
+                        val newRate = withBase.getValue(it.id) / newBase
+                        CurrencyItem(it.id, newRate, items.first().amount * newRate, it.firstItem)
                     }
+                    return@map newItems
                 }
-                    return@map response.rates.map { CurrencyItem(it.key, it.value) }
-            }
-            .map {
-                val result = mutableListOf(CurrencyItem(DEFAULT_BASE, firstItem = true))
-                result.addAll(it)
-                return@map result
             }
     }
 
@@ -62,11 +59,8 @@ class CurrencyModel(
     fun getRates(number: Int, items: List<CurrencyItem>): Single<List<CurrencyItem>> {
         val listToModify = items.toMutableList()
         val base = listToModify.removeAt(number)
-        val new = listToModify.map {
-            val newMultiplier = it.rate / base.rate
-            CurrencyItem(it.id, newMultiplier, newMultiplier * base.amount)
-        }.toMutableList()
-        new.add(0, CurrencyItem(base.id, amount = base.amount, firstItem = true))
-        return Single.just(new)
+        val new = listToModify.map { CurrencyItem(it.id, it.rate / base.rate) }.toMutableList()
+        new.add(0, CurrencyItem(base.id, firstItem = true))
+        return Single.just(convertAmount(new, base.amount))
     }
 }
