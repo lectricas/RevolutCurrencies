@@ -9,14 +9,24 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.jakewharton.rxbinding2.view.clicks
+import com.jakewharton.rxbinding2.view.visibility
 import com.lectricas.currienciesrecycler.App
 import com.lectricas.currienciesrecycler.R
 import com.lectricas.currienciesrecycler.model.CurrencyModel
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_currency.currenciesRecycler
+import kotlinx.android.synthetic.main.activity_currency.error
+import kotlinx.android.synthetic.main.activity_currency.progress
+import kotlinx.android.synthetic.main.activity_currency.tryAgain
 import me.dmdev.rxpm.base.PmSupportActivity
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
 
@@ -38,10 +48,20 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
     }
 
     override fun onBindPresentationModel(pm: CurrencyPm) {
+        pm.currencyProgress.bindTo(progress.visibility())
+        pm.errorState.bindTo(error.visibility())
+
         pm.currenciesState.bindTo {
             currencyAdapter.updateItems(it)
         }
-    }
+
+        pm.errorCommand.bindTo {
+            //todo change to snack maybe
+            Toast.makeText(this, getString(R.string.error_short), Toast.LENGTH_LONG).show()
+        }
+        tryAgain.clicks().bindTo(pm.tryAgain)
+
+}
 
     override fun providePresentationModel(): CurrencyPm {
         return CurrencyPm(CurrencyModel((applicationContext as App).serverApi))
@@ -64,12 +84,8 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
                     val position = rv.getChildAdapterPosition(it)
                     presentationModel.pickCurrencyAction.consumer.accept(position)
                     val editText = it.getChildAt(1) as EditText
-                    (editText).post {
-                        editText.requestFocusFromTouch()
-                        editText.setSelection(editText.length())
-                        val lManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        lManager.showSoftInput(editText, 0)
-                    }
+                    editText.showKeyboard()
+                    editText.setSelection(editText.text.length)
                     return true
                 }
             }
@@ -85,11 +101,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
             if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                 (recyclerView.getChildAt(0) as? LinearLayout)?.let {
                     val editText = it.getChildAt(1) as EditText
-                    (editText).post {
-                        editText.clearFocus()
-                        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(recyclerView.windowToken, 0)
-                    }
+                    editText.hideKeyboard()
                 }
             }
         }
