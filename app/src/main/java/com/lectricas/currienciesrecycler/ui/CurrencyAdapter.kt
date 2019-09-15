@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.lectricas.currienciesrecycler.R
+import kotlinx.android.synthetic.main.item_currency.view.currencyIcon
 import kotlinx.android.synthetic.main.item_currency.view.currencyId
+import kotlinx.android.synthetic.main.item_currency.view.currencyName
 import kotlinx.android.synthetic.main.item_currency.view.currencyText
 import timber.log.Timber
 
@@ -34,13 +36,28 @@ class CurrencyAdapter(private val function: (String) -> Unit) : RecyclerView.Ada
 
         fun bind(currencyItem: CurrencyItem) {
             itemView.currencyText.addTextChangedListener(CurrencyTextWatcher(this))
-            itemView.currencyId.text = currencyItem.id
+            val imageId = itemView.resources
+                .getIdentifier(
+                    "ic_${currencyItem.id.toLowerCase()}_flag",
+                    "drawable",
+                    itemView.context.packageName
+                )
+
+            val nameId = itemView.resources
+                .getIdentifier(
+                    "currency_${currencyItem.id.toLowerCase()}_name",
+                    "string",
+                    itemView.context.packageName
+                )
+            itemView.currencyIcon.setImageResource(imageId)
             val amount = if (currencyItem.amount == 0.0) {
                 ""
             } else {
                 String.format("%.2f", currencyItem.amount)
             }
             itemView.currencyText.setText(amount)
+            itemView.currencyId.text = currencyItem.id
+            itemView.currencyName.text = itemView.resources.getString(nameId)
         }
     }
 

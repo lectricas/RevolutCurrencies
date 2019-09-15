@@ -83,7 +83,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
                 (clicked as? LinearLayout)?.let {
                     val position = rv.getChildAdapterPosition(it)
                     presentationModel.pickCurrencyAction.consumer.accept(position)
-                    val editText = it.getChildAt(1) as EditText
+                    val editText = it.getChildAt(2) as EditText
                     editText.showKeyboard()
                     editText.setSelection(editText.text.length)
                     return true
@@ -100,7 +100,7 @@ class CurrencyActivity : PmSupportActivity<CurrencyPm>() {
             super.onScrollStateChanged(recyclerView, newState)
             if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                 (recyclerView.getChildAt(0) as? LinearLayout)?.let {
-                    val editText = it.getChildAt(1) as EditText
+                    val editText = it.getChildAt(2) as EditText
                     editText.hideKeyboard()
                 }
             }
